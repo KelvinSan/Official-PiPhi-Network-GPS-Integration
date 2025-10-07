@@ -1,0 +1,57 @@
+{
+  "name": "Official PiPhi Network GPS Integration",
+  "version": "latest",
+  "description": "Integration for GPS Serial Port Data",
+
+  "image": "piphinetwork/official-gps-integration",
+  "container": {
+    "ports": [
+      { "container": 3080, "host": 3080 }
+    ],
+    "environment": {
+      "LOG_LEVEL": "info"
+    },
+    "volumes": [
+      { "host": "/data/gps", "container": "/app/gps" }
+    ],
+    "restart_policy": {
+      "name": "unless-stopped"
+    }
+  },
+
+  "config": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "host": { "type": "string", "format": "ipv4" }
+      },
+      "required": ["host"]
+    },
+    "ui": {
+      "host": {
+        "title": "Device IP",
+        "description": "The local IP address of your Awair Element",
+        "widget": "text"
+      }
+    }
+  },
+
+  "capabilities": [
+    "temperature",
+    "humidity",
+    "co2",
+    "voc",
+    "pm25",
+    "score"
+  ],
+
+  "commands": {
+    "refresh": { "description": "Force refresh device state" }
+  },
+
+  "entities": [
+    { "id": "temperature", "name": "Temperature", "capabilities": ["temperature"], "unit": "°C" },
+    { "id": "humidity", "name": "Humidity", "capabilities": ["humidity"], "unit": "%" },
+    { "id": "co2", "name": "CO₂", "capabilities": ["co2"], "unit": "ppm" }
+  ]
+}
