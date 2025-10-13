@@ -8,6 +8,7 @@
     "ports": [
       { "container": 3080, "host": 3080 }
     ],
+    "privileged": true,
     "environment": {
       "LOG_LEVEL": "info"
     },
