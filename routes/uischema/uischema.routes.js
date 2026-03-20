@@ -5,7 +5,7 @@ export const uischemaRouter = express.Router();
 const schema = {
     "title": "USB GPS Integration Configuration",
     "description":
-        "Configuration for USB GPS integration.",
+        "Configuration for USB GPS and NMEA serial integrations.",
     "type": "object",
     "required": ["path"],
     "properties": {
@@ -13,19 +13,25 @@ const schema = {
             "type": "string",
             "title": "GPS Device Path",
             "description":
-                "USB GPS device path/address",
+                "USB GPS or NMEA serial device path/address",
             "enum": [],
+            "enumNames": [],
             "errorMessage": "Please select a device before continuing",
         }
     },
 }
 
-uischemaRouter.get('/ui', async (req, res) => {
-    const paths = await getGPSDevicePaths();
-    schema.properties.path.enum = paths.map(path => path.path);
+async function handleUiSchema(_req, res) {
+    const devices = await getGPSDevicePaths();
+    schema.properties.path.enum = devices.map(device => device.path);
+    schema.properties.path.enumNames = devices.map(device => `${device.name} [${device.confidence}]`);
     res.json(
         {
-            "schema": schema
+            "schema": schema,
+            "devices": devices,
         }
     )
-})
+}
+
+uischemaRouter.get('/ui', handleUiSchema)
+uischemaRouter.get('/ui-config', handleUiSchema)

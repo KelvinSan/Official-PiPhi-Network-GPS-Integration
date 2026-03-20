@@ -1,8 +1,6 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
-import { client } from "../../lib/mqttclient.js";
-import { send_telemetry, sign_payload } from "../../lib/common.js";
-import { getGPSerialPort, GPS, initializeClient } from "../../lib/gps.js";
+import { configureGPSDevice } from "../../lib/gps.js";
 export const router = express.Router();
 
 
@@ -14,19 +12,13 @@ router.post('/config', schema,async(req, res) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    let payload = req.body
-    const signature = await sign_payload(payload,req.body.secret)
-    const findUsedGPS = await getGPSerialPort(payload.path)
-    if(findUsedGPS){
-        console.log("Found used GPS")
-        await findUsedGPS.closeSerialPort()
-        delete GPS.gpsSerialPortMap[payload.path]
-    }
-    const gps = await initializeClient(payload.path)
-    await gps.openSerialPort()
-    await gps.getRealTimeData(signature)
+    const payload = req.body
+    const result = await configureGPSDevice(payload)
     return res.json({
-        "success": true,
-        "message": "Sending MQTT telemetry topic"
+        success: true,
+        device_id: result.device_id,
+        path: result.path,
+        message: result.message,
+        device: result.device ?? null,
     })
 })
