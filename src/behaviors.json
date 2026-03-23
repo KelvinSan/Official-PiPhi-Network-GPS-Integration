@@ -1,0 +1,150 @@
+{
+  "devices": [
+    {
+      "id": "gps_receiver",
+      "name": "GPS Receiver",
+      "description": "USB or NMEA compatible GPS receiver",
+      "capabilities": [
+        "latitude",
+        "longitude",
+        "satellites",
+        "speed_knots",
+        "fix_status",
+        "fix_quality",
+        "hdop",
+        "refresh",
+        "rescan_devices"
+      ],
+      "intents": [
+        {
+          "id": "track_motion",
+          "label": "Track movement",
+          "description": "Keep monitoring motion and speed for geofencing"
+        },
+        {
+          "id": "watch_signal_health",
+          "label": "Watch signal health",
+          "description": "Monitor fix quality and GPS reliability"
+        }
+      ],
+      "conditions": [
+        {
+          "id": "speed_above",
+          "label": "Speed above",
+          "type": "number",
+          "params": [
+            {
+              "name": "knots",
+              "label": "Speed threshold",
+              "type": "number",
+              "min": 1,
+              "max": 120,
+              "step": 1,
+              "default": 25,
+              "unit": "kn",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "low_satellite_count",
+          "label": "Satellite count below",
+          "type": "number",
+          "params": [
+            {
+              "name": "count",
+              "label": "Minimum satellites",
+              "type": "number",
+              "min": 1,
+              "max": 30,
+              "default": 5,
+              "step": 1,
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "fix_status_equals",
+          "label": "Fix status is",
+          "type": "enum",
+          "params": [
+            {
+              "name": "status",
+              "label": "Fix status",
+              "type": "enum",
+              "options": ["none", "2d", "3d"],
+              "default": "none",
+              "required": true
+            }
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "id": "refresh",
+          "label": "Refresh GPS state"
+        },
+        {
+          "id": "rescan_devices",
+          "label": "Rescan serial devices"
+        },
+        {
+          "id": "notify",
+          "label": "Send location alert",
+          "params": [
+            {
+              "name": "message",
+              "label": "Alert message",
+              "type": "text",
+              "default": "GPS event detected",
+              "required": true
+            },
+            {
+              "name": "channel",
+              "label": "Delivery channel",
+              "type": "enum",
+              "options": ["in_app", "email", "sms"],
+              "default": "in_app",
+              "required": true
+            }
+          ]
+        }
+      ],
+      "stop": [
+        {
+          "id": "after_duration",
+          "label": "After duration",
+          "type": "duration",
+          "params": [
+            {
+              "name": "duration",
+              "label": "Tracking duration",
+              "type": "duration",
+              "default": "2h",
+              "required": true
+            }
+          ]
+        }
+      ],
+      "manualOverride": [
+        {
+          "id": "continue",
+          "label": "Continue automation"
+        },
+        {
+          "id": "pause",
+          "label": "Pause automation",
+          "params": [
+            {
+              "name": "duration",
+              "label": "Pause duration",
+              "type": "duration",
+              "default": "15m",
+              "required": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
