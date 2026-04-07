@@ -1,0 +1,2 @@
+ignoredBuiltDependencies:
+  - '@serialport/bindings-cpp'
