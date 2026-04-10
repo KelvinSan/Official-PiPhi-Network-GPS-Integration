@@ -1,26 +1,16 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
-import { buildConfigApplyResponse, formatConfigApplyLog, formatRuntimeAuthSyncLog, } from "piphi-runtime-kit-node";
+import { buildConfigApplyResponse, formatConfigApplyLog, } from "piphi-runtime-kit-node";
+import { formatExpressRuntimeAuthSyncLog, syncRuntimeAuthFromExpressRequest, } from "piphi-runtime-kit-node/adapters/express";
 import { configureGPSDevice } from "../../lib/gps.js";
 import { getRuntimeContext } from "../../lib/runtime.js";
 import { logger } from "../../server.js";
 export const router = express.Router();
-const schema = [
-    body("path").not().isEmpty().withMessage("Please select a device before continuing"),
-];
-function readHeaderValue(value) {
-    if (Array.isArray(value)) {
-        return value[0];
-    }
-    return value;
-}
+const schema = [body("path").not().isEmpty().withMessage("Please select a device before continuing")];
 function syncRuntimeAuthFromRequest(req, payload) {
     const runtime = getRuntimeContext();
-    const parsed = runtime.auth.syncFromHeaders({
-        "x-container-id": readHeaderValue(req.header("x-container-id") ?? undefined),
-        "x-piphi-integration-token": readHeaderValue(req.header("x-piphi-integration-token") ?? undefined),
-    }, typeof payload.container_id === "string" ? payload.container_id : null);
-    logger.info(formatRuntimeAuthSyncLog(parsed, typeof payload.container_id === "string" ? payload.container_id : null));
+    syncRuntimeAuthFromExpressRequest(runtime, req, typeof payload.container_id === "string" ? payload.container_id : null);
+    logger.info(formatExpressRuntimeAuthSyncLog(req, typeof payload.container_id === "string" ? payload.container_id : null));
 }
 router.post("/config", schema, async (req, res) => {
     const errors = validationResult(req);

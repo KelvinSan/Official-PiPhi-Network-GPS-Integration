@@ -45,6 +45,9 @@ importers:
       '@types/winston':
         specifier: ^2.4.4
         version: 2.4.4
+      piphi-runtime-testkit-node:
+        specifier: file:../piphi-runtime-testkit-node
+        version: file:../piphi-runtime-testkit-node
       typescript:
         specifier: ^5.9.2
         version: 5.9.3
@@ -529,6 +532,10 @@ packages:
 
   piphi-runtime-kit-node@file:../piphi-runtime-kit-node:
     resolution: {directory: ../piphi-runtime-kit-node, type: directory}
+    engines: {node: '>=18'}
+
+  piphi-runtime-testkit-node@file:../piphi-runtime-testkit-node:
+    resolution: {directory: ../piphi-runtime-testkit-node, type: directory}
     engines: {node: '>=18'}
 
   process-nextick-args@2.0.1:
@@ -1226,6 +1233,8 @@ snapshots:
   path-to-regexp@8.3.0: {}
 
   piphi-runtime-kit-node@file:../piphi-runtime-kit-node: {}
+
+  piphi-runtime-testkit-node@file:../piphi-runtime-testkit-node: {}
 
   process-nextick-args@2.0.1: {}
 

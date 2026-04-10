@@ -10,11 +10,28 @@ import {
   setRuntimeStatus,
 } from "./runtime.js";
 
-const telemetryEndpoint =
-  process.env.PIPHI_TELEMETRY_ENDPOINT || process.env.PIPHI_CORE_TELEMETRY_URL || null;
-const eventsEndpoint = process.env.PIPHI_EVENTS_ENDPOINT || null;
-const containerIdFromEnv = process.env.PIPHI_CONTAINER_ID || null;
-const internalTokenFromEnv = process.env.PIPHI_INTEGRATION_INTERNAL_TOKEN || null;
+interface TelemetryPublisherClient {
+  connected: boolean;
+  publish(topic: string, payload: string, callback?: (error?: Error | null) => void): unknown;
+}
+
+let telemetryPublisherClient: TelemetryPublisherClient = client;
+
+function getTelemetryEndpoint(): string | null {
+  return process.env.PIPHI_TELEMETRY_ENDPOINT || process.env.PIPHI_CORE_TELEMETRY_URL || null;
+}
+
+function getEventsEndpoint(): string | null {
+  return process.env.PIPHI_EVENTS_ENDPOINT || null;
+}
+
+function getContainerIdFromEnv(): string | null {
+  return process.env.PIPHI_CONTAINER_ID || null;
+}
+
+function getInternalTokenFromEnv(): string | null {
+  return process.env.PIPHI_INTEGRATION_INTERNAL_TOKEN || null;
+}
 
 export async function sign_payload(payload: unknown, secret?: string): Promise<string> {
   const data = JSON.stringify(payload, null, 2);
@@ -43,12 +60,12 @@ async function postJson(
 }
 
 async function publishTelemetryViaMqtt(payload: Record<string, unknown>): Promise<void> {
-  if (!client.connected) {
+  if (!telemetryPublisherClient.connected) {
     throw new Error("MQTT client is not connected");
   }
 
   await new Promise<void>((resolve, reject) => {
-    client.publish("piphi/telemetry", JSON.stringify(payload), (error) => {
+    telemetryPublisherClient.publish("piphi/telemetry", JSON.stringify(payload), (error) => {
       if (error) {
         reject(error);
         return;
@@ -72,6 +89,9 @@ export async function send_telemetry(
     try {
       await publishTelemetryViaMqtt(payload);
     } catch (mqttError) {
+      const telemetryEndpoint = getTelemetryEndpoint();
+      const containerIdFromEnv = getContainerIdFromEnv();
+      const internalTokenFromEnv = getInternalTokenFromEnv();
       if (telemetryEndpoint && (payload.container_id || containerIdFromEnv)) {
         await postJson(
           telemetryEndpoint,
@@ -125,6 +145,7 @@ export async function emit_event(eventPayload: {
   data?: Record<string, unknown>;
 }): Promise<RuntimeEvent> {
   const event = recordRuntimeEvent(eventPayload);
+  const eventsEndpoint = getEventsEndpoint();
   if (eventsEndpoint) {
     try {
       await postJson(eventsEndpoint, eventPayload, {});
@@ -144,4 +165,10 @@ export function handle_runtime_error(error: unknown): void {
       message: error instanceof Error ? error.message : String(error),
     },
   });
+}
+
+export function setTelemetryPublisherClientForTests(
+  nextClient: TelemetryPublisherClient | null,
+): void {
+  telemetryPublisherClient = nextClient ?? client;
 }

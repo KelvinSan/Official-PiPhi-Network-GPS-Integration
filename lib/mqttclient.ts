@@ -9,12 +9,30 @@ const port = process.env.MQTT_PORT || "1883";
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`;
 const connectUrl = `${protocol}://${host}:${port}`;
 
-export const client: MqttClient = mqtt.connect(connectUrl, {
-  clientId,
-  clean: true,
-  connectTimeout: 4000,
-  reconnectPeriod: 1000,
-});
+function createTestClient(): MqttClient {
+  const fakeClient = {
+    connected: false,
+    publish(_topic: string, _payload: string, callback?: (error?: Error | null) => void) {
+      callback?.(null);
+      return true;
+    },
+    on() {
+      return fakeClient as unknown as MqttClient;
+    },
+  };
+  return fakeClient as unknown as MqttClient;
+}
+
+const shouldDisableMqtt = process.env.NODE_ENV === "test" || process.env.PIPHI_DISABLE_MQTT === "true";
+
+export const client: MqttClient = shouldDisableMqtt
+  ? createTestClient()
+  : mqtt.connect(connectUrl, {
+      clientId,
+      clean: true,
+      connectTimeout: 4000,
+      reconnectPeriod: 1000,
+    });
 
 client.on("connect", () => {
   setMqttStatus(true);

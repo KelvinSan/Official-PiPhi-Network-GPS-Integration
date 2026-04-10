@@ -25,6 +25,7 @@ const SERIAL_BRIDGE_HINTS = {
     "0403:6001": "FTDI USB-serial adapter",
     "1a86:7523": "WCH CH340 adapter",
 };
+let gpsTestHooks = null;
 function safeString(value) {
     return typeof value === "string" ? value : "";
 }
@@ -143,6 +144,9 @@ export async function getGPSerialPort(serialPort) {
     return GPS.gpsSerialPortMap[serialPort];
 }
 export async function getGPSDevicePaths() {
+    if (gpsTestHooks?.getGPSDevicePaths) {
+        return gpsTestHooks.getGPSDevicePaths();
+    }
     return listCandidateGPSDevices();
 }
 export function getEntitiesPayload() {
@@ -197,6 +201,9 @@ export async function deconfigureGPSDevice(config = {}) {
     return { success: true, removed: 1 };
 }
 export async function refreshGPSDevice(target = {}) {
+    if (gpsTestHooks?.refreshGPSDevice) {
+        return gpsTestHooks.refreshGPSDevice(target);
+    }
     const gps = target.path
         ? GPS.gpsSerialPortMap[target.path]
         : Object.values(GPS.gpsSerialPortMap)[0];
@@ -206,6 +213,9 @@ export async function refreshGPSDevice(target = {}) {
     await gps.openSerialPort();
     await gps.refreshRuntimeState();
     return { success: true, path: gps.path, is_open: gps.serialPort.isOpen };
+}
+export function setGPSTestHooksForTests(hooks) {
+    gpsTestHooks = hooks;
 }
 export class GPS {
     static gpsSerialPortMap = {};

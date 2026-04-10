@@ -179,3 +179,24 @@ export function getDiagnosticsSummary() {
         runtimeSnapshot: getRuntimeSnapshot(),
     };
 }
+export function resetRuntimeForTests() {
+    for (const key of Object.keys(activeConfigs)) {
+        delete activeConfigs[key];
+    }
+    registry.entries.clear();
+    registry.stateSnapshots.clear();
+    registry.recentEvents.length = 0;
+    runtimeMetadata.status = "starting";
+    runtimeMetadata.telemetry.publishedCount = 0;
+    runtimeMetadata.telemetry.lastPayload = null;
+    runtimeMetadata.telemetry.lastPublishedAt = null;
+    runtimeMetadata.telemetry.lastDelivery = "idle";
+    runtimeMetadata.mqtt.connected = false;
+    runtimeMetadata.lastError = null;
+    runtimeContext.auth.update({
+        containerId: process.env.PIPHI_CONTAINER_ID ?? null,
+        internalToken: process.env.PIPHI_INTEGRATION_INTERNAL_TOKEN ?? null,
+    });
+    runtimeContext.processState.coreBaseUrl = process.env.PIPHI_CORE_BASE_URL || "http://127.0.0.1:8000";
+    runtimeContext.processState.setCurrentGeneration(null);
+}

@@ -89,6 +89,15 @@ interface GPSRefreshResult {
   is_open?: boolean;
 }
 
+interface GPSTestHooks {
+  getGPSDevicePaths?: () => Promise<GPSDiscoveryDevice[]>;
+  refreshGPSDevice?: (
+    target: { path?: string },
+  ) => Promise<GPSRefreshResult>;
+}
+
+let gpsTestHooks: GPSTestHooks | null = null;
+
 function safeString(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
@@ -219,6 +228,9 @@ export async function getGPSerialPort(serialPort: string): Promise<GPS | undefin
 }
 
 export async function getGPSDevicePaths(): Promise<GPSDiscoveryDevice[]> {
+  if (gpsTestHooks?.getGPSDevicePaths) {
+    return gpsTestHooks.getGPSDevicePaths();
+  }
   return listCandidateGPSDevices();
 }
 
@@ -290,6 +302,9 @@ export async function deconfigureGPSDevice(
 export async function refreshGPSDevice(
   target: { path?: string } = {},
 ): Promise<GPSRefreshResult> {
+  if (gpsTestHooks?.refreshGPSDevice) {
+    return gpsTestHooks.refreshGPSDevice(target);
+  }
   const gps = target.path
     ? GPS.gpsSerialPortMap[target.path]
     : Object.values(GPS.gpsSerialPortMap)[0];
@@ -299,6 +314,10 @@ export async function refreshGPSDevice(
   await gps.openSerialPort();
   await gps.refreshRuntimeState();
   return { success: true, path: gps.path, is_open: gps.serialPort.isOpen };
+}
+
+export function setGPSTestHooksForTests(hooks: GPSTestHooks | null): void {
+  gpsTestHooks = hooks;
 }
 
 export class GPS {

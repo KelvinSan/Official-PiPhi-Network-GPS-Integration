@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check": "tsc --noEmit -p tsconfig.json",
-    "test": "tsc -p tsconfig.json && node --test dist/test/**/*.test.js",
+    "test": "NODE_ENV=test tsc -p tsconfig.json && NODE_ENV=test node --test dist/test/**/*.test.js",
     "start": "tsc -p tsconfig.json && node dist/server.js"
   },
   "keywords": [],
@@ -27,6 +27,7 @@
     "@types/express-winston": "^4.0.2",
     "@types/node": "^24.5.1",
     "@types/winston": "^2.4.4",
+    "piphi-runtime-testkit-node": "file:../piphi-runtime-testkit-node",
     "typescript": "^5.9.2"
   }
 }
