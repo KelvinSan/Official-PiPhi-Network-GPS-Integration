@@ -8,13 +8,13 @@
     "name": "PiPhi Network",
     "website": "https://piphi.io"
   },
-  "image": "piphinetwork/official-gps-integration",
+  "image": "piphinetwork/official-gps-integration:1.0.0",
   "platforms": ["linux"],
   "runtime": {
     "linux": {
       "type": "container",
       "container": {
-        "image": "piphinetwork/official-gps-integration",
+        "image": "piphinetwork/official-gps-integration:1.0.0",
         "ports": [
           { "container": 3080, "host": 3080 }
         ],

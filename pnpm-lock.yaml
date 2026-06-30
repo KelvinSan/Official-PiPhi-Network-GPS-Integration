@@ -24,8 +24,8 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0
       piphi-runtime-kit-node:
-        specifier: file:../piphi-runtime-kit-node
-        version: file:../piphi-runtime-kit-node
+        specifier: 0.1.3
+        version: 0.1.3
       serialport:
         specifier: ^13.0.0
         version: 13.0.0
@@ -530,8 +530,8 @@ packages:
   path-to-regexp@8.3.0:
     resolution: {integrity: sha512-7jdwVIRtsP8MYpdXSwOS0YdD0Du+qOoF/AEPIt88PcCFrZCzx41oxku1jD88hZBwbNUIEfpqvuhjFaMAqMTWnA==}
 
-  piphi-runtime-kit-node@file:../piphi-runtime-kit-node:
-    resolution: {directory: ../piphi-runtime-kit-node, type: directory}
+  piphi-runtime-kit-node@0.1.3:
+    resolution: {integrity: sha512-JWs53IrvsYMp4/dKd9CrlHEW9vmblGZpKTCBd9vPAmAw/+bl4ugw2sMVtWRwlEPuKP7zNSAe1MlbaVvsqnzRMA==}
     engines: {node: '>=18'}
 
   piphi-runtime-testkit-node@file:../piphi-runtime-testkit-node:
@@ -1232,7 +1232,7 @@ snapshots:
 
   path-to-regexp@8.3.0: {}
 
-  piphi-runtime-kit-node@file:../piphi-runtime-kit-node: {}
+  piphi-runtime-kit-node@0.1.3: {}
 
   piphi-runtime-testkit-node@file:../piphi-runtime-testkit-node: {}
 

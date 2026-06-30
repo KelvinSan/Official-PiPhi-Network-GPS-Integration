@@ -2,6 +2,11 @@
 
 This integration connects USB and NMEA-compatible GPS receivers to PiPhi Network Core through a serial device path.
 
+The runtime now uses the published Node SDK package:
+
+- runtime SDK: `piphi-runtime-kit-node@0.1.3`
+- local test helper during development: `piphi-runtime-testkit-node`
+
 ## Supported devices
 
 The integration is currently targeted first at:
@@ -55,6 +60,36 @@ Useful endpoints:
 - `POST /deconfigure`
 - `GET /state`
 - `GET /diagnostics`
+
+## Local development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Build the project:
+
+```bash
+npm run build
+```
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+Start the runtime:
+
+```bash
+npm start
+```
+
+The local test flow uses the Node testkit through a repo-local dev dependency.
+The production runtime dependency on `piphi-runtime-kit-node` now comes from npm
+instead of a local workspace path.
 
 ## Indoor behavior and weak signal handling
 
@@ -142,3 +177,7 @@ A receiver may not work if it:
 ## Notes for integrators
 
 Discovery returns richer device metadata, including confidence and detection reasons, to help diagnose why a device was recognized as a GPS candidate.
+
+The test suite in this repo now exercises happy-path, negative-path, and
+edge-case runtime behavior, including runtime-to-Core delivery paths through the
+Node testkit.
