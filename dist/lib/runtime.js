@@ -89,7 +89,9 @@ export function upsertActiveConfig(config) {
         throw new Error("A device id, id, or path is required to upsert an active config");
     }
     const activeConfig = {
+        configId: config.configId ?? deviceId,
         deviceId,
+        integrationId: config.integrationId ?? null,
         path: config.path ?? null,
         containerId: config.containerId ?? null,
         configName: config.configName ?? config.path ?? deviceId,
@@ -160,6 +162,9 @@ export function getRecentEvents(limit = 50) {
 }
 export function getActiveConfigs() {
     return clone(Object.values(activeConfigs));
+}
+export function getActiveConfig(deviceId) {
+    return activeConfigs[deviceId] ? clone(activeConfigs[deviceId]) : null;
 }
 export function getHealthSummary() {
     const devices = Object.values(getDeviceMap());

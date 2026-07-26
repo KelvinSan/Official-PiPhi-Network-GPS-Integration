@@ -235,8 +235,10 @@ export class GPS {
         try {
             this.path = serialPort;
             this.context = {
+                configId: serialPort,
                 deviceId: serialPort,
                 containerId: null,
+                integrationId: null,
                 configName: serialPort,
                 signature: null,
             };
@@ -345,8 +347,10 @@ export class GPS {
         const previousDeviceId = this.context.deviceId;
         this.discoveryMetadata = await getGPSDeviceInfo(config.path);
         this.context = {
-            deviceId: config.id || config.path,
+            configId: config.config_id || config.id || config.path,
+            deviceId: config.device_id || config.path,
             containerId: config.container_id || null,
+            integrationId: config.integration_id || null,
             configName: config.configName || config.path,
             signature: await sign_payload({ id: config.id || config.path, path: config.path }, config.secret),
         };
@@ -354,9 +358,11 @@ export class GPS {
             removeActiveConfig(previousDeviceId);
         }
         upsertActiveConfig({
+            configId: this.context.configId,
             deviceId: this.context.deviceId,
             path: config.path,
             containerId: this.context.containerId,
+            integrationId: this.context.integrationId,
             configName: this.context.configName,
         });
         updateDeviceRuntime(this.context.deviceId, {
@@ -398,8 +404,10 @@ export class GPS {
     }
     async emitTelemetry(metrics, timestamp) {
         const telemetryPayload = {
+            config_id: this.context.configId,
             device_id: this.context.deviceId,
             container_id: this.context.containerId,
+            integration_id: this.context.integrationId,
             timestamp,
             metrics,
             units: buildUnits(metrics),

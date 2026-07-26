@@ -45,7 +45,7 @@
               "required": true
             }
           ],
-          "capability": "sensor.speed_above",
+          "capability": "sensor.speed_knots",
           "operators": [
             ">",
             ">=",
@@ -55,7 +55,7 @@
           ],
           "runtime": {
             "source": "state",
-            "field": "speed_above",
+            "field": "speed_knots",
             "operator": ">"
           },
           "freshness": {
@@ -82,7 +82,7 @@
               "required": true
             }
           ],
-          "capability": "sensor.low_satellite_count",
+          "capability": "sensor.satellites",
           "operators": [
             ">",
             ">=",
@@ -92,8 +92,8 @@
           ],
           "runtime": {
             "source": "state",
-            "field": "low_satellite_count",
-            "operator": ">"
+            "field": "satellites",
+            "operator": "<"
           },
           "freshness": {
             "maxAgeSeconds": 300,
@@ -121,7 +121,7 @@
               "required": true
             }
           ],
-          "capability": "sensor.fix_status_equals",
+          "capability": "sensor.fix_status",
           "operators": [
             "eq",
             "neq",
@@ -129,7 +129,7 @@
           ],
           "runtime": {
             "source": "state",
-            "field": "fix_status_equals",
+            "field": "fix_status",
             "operator": "eq"
           },
           "freshness": {
@@ -179,6 +179,9 @@
           },
           "ui": {
             "group": "do_this"
+          },
+          "safety": {
+            "riskLevel": "low"
           }
         },
         {
@@ -218,6 +221,9 @@
           },
           "ui": {
             "group": "do_this"
+          },
+          "safety": {
+            "riskLevel": "low"
           }
         },
         {
@@ -278,6 +284,9 @@
           },
           "ui": {
             "group": "do_this"
+          },
+          "safety": {
+            "riskLevel": "low"
           }
         }
       ],
@@ -497,5 +506,37 @@
       }
     }
   ],
-  "behaviorSchemaVersion": "integration.behaviors.v2"
+  "behaviorSchemaVersion": "integration.behaviors.v2",
+  "telemetry": {
+    "capabilityMappings": [
+      {
+        "nativeMetric": "fix_quality",
+        "capability": "sensor.fix_quality"
+      },
+      {
+        "nativeMetric": "fix_status",
+        "capability": "sensor.fix_status"
+      },
+      {
+        "nativeMetric": "hdop",
+        "capability": "sensor.hdop"
+      },
+      {
+        "nativeMetric": "latitude",
+        "capability": "sensor.latitude"
+      },
+      {
+        "nativeMetric": "longitude",
+        "capability": "sensor.longitude"
+      },
+      {
+        "nativeMetric": "satellites",
+        "capability": "sensor.satellites"
+      },
+      {
+        "nativeMetric": "speed_knots",
+        "capability": "sensor.speed_knots"
+      }
+    ]
+  }
 }

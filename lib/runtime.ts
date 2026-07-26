@@ -38,7 +38,9 @@ export interface DeviceRuntimeState extends Record<string, unknown> {
 }
 
 export interface ActiveConfig {
+  configId: string;
   deviceId: string;
+  integrationId: string | null;
   path: string | null;
   containerId: string | null;
   configName: string;
@@ -175,10 +177,12 @@ export function clearRuntimeError(): void {
 }
 
 export function upsertActiveConfig(config: {
+  configId?: string;
   deviceId?: string;
   id?: string;
   path?: string | null;
   containerId?: string | null;
+  integrationId?: string | null;
   configName?: string;
 }): ActiveConfig {
   const deviceId = config.deviceId || config.id || config.path;
@@ -187,7 +191,9 @@ export function upsertActiveConfig(config: {
   }
 
   const activeConfig: ActiveConfig = {
+    configId: config.configId ?? deviceId,
     deviceId,
+    integrationId: config.integrationId ?? null,
     path: config.path ?? null,
     containerId: config.containerId ?? null,
     configName: config.configName ?? config.path ?? deviceId,
@@ -280,6 +286,10 @@ export function getRecentEvents(limit = 50): RuntimeEvent[] {
 
 export function getActiveConfigs(): ActiveConfig[] {
   return clone(Object.values(activeConfigs));
+}
+
+export function getActiveConfig(deviceId: string): ActiveConfig | null {
+  return activeConfigs[deviceId] ? clone(activeConfigs[deviceId]) : null;
 }
 
 export function getHealthSummary(): {

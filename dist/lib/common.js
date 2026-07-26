@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { client } from "./mqttclient.js";
-import { clearRuntimeError, noteTelemetry, recordRuntimeEvent, setRuntimeError, setRuntimeStatus, } from "./runtime.js";
+import { clearRuntimeError, getActiveConfig, getRuntimeContext, noteTelemetry, recordRuntimeEvent, setRuntimeError, setRuntimeStatus, } from "./runtime.js";
 let telemetryPublisherClient = client;
 function getTelemetryEndpoint() {
     return process.env.PIPHI_TELEMETRY_ENDPOINT || process.env.PIPHI_CORE_TELEMETRY_URL || null;
@@ -60,6 +60,7 @@ export async function send_telemetry(payload) {
             const internalTokenFromEnv = getInternalTokenFromEnv();
             if (telemetryEndpoint && (payload.container_id || containerIdFromEnv)) {
                 await postJson(telemetryEndpoint, {
+                    config_id: payload.config_id,
                     device_id: payload.device_id,
                     timestamp: payload.timestamp,
                     metrics: payload.metrics,
@@ -103,9 +104,28 @@ export async function send_telemetry(payload) {
 export async function emit_event(eventPayload) {
     const event = recordRuntimeEvent(eventPayload);
     const eventsEndpoint = getEventsEndpoint();
-    if (eventsEndpoint) {
+    const activeConfig = eventPayload.device_id ? getActiveConfig(eventPayload.device_id) : null;
+    if (eventsEndpoint && activeConfig?.integrationId && activeConfig.containerId) {
         try {
-            await postJson(eventsEndpoint, eventPayload, {});
+            const runtime = getRuntimeContext();
+            const containerId = activeConfig.containerId || runtime.auth.containerId;
+            await postJson(eventsEndpoint, {
+                event_id: event.event_id,
+                type: event.type,
+                ts: event.ts,
+                integration_id: activeConfig.integrationId,
+                config_id: activeConfig.configId,
+                container_id: containerId,
+                device_id: event.device_id,
+                severity: event.severity,
+                transport: "rest",
+                data: event.data,
+            }, {
+                "X-Container-Id": String(containerId),
+                ...(runtime.auth.internalToken
+                    ? { "X-PiPhi-Integration-Token": runtime.auth.internalToken }
+                    : {}),
+            });
         }
         catch (error) {
             setRuntimeError(error);

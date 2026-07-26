@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { MockCoreServer } from "piphi-runtime-testkit-node";
 import { emit_event, handle_runtime_error, send_telemetry, setTelemetryPublisherClientForTests, sign_payload, } from "../lib/common.js";
-import { getHealthSummary, getRecentEvents, resetRuntimeForTests } from "../lib/runtime.js";
+import { getHealthSummary, getRecentEvents, resetRuntimeForTests, upsertActiveConfig, } from "../lib/runtime.js";
 import { restoreEnv } from "./test-helpers.js";
 const ORIGINAL_ENV = { ...process.env };
 test.afterEach(() => {
@@ -92,6 +92,12 @@ test("emit_event swallows HTTP endpoint failures and stores runtime errors", asy
     try {
         mockCore.failEventsWithStatus(500, { ok: false });
         process.env.PIPHI_EVENTS_ENDPOINT = `${mockCore.baseUrl}/api/v2/events/ingest`;
+        upsertActiveConfig({
+            configId: "gps-config-error",
+            deviceId: "gps-event-error",
+            integrationId: "gps-integration",
+            containerId: "gps-container-error",
+        });
         await emit_event({
             type: "gps_event_error",
             device_id: "gps-event-error",

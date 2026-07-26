@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
 import { MockCoreServer, buildEventPayload, buildTelemetryPayload, } from "piphi-runtime-testkit-node";
 import { emit_event, send_telemetry, setTelemetryPublisherClientForTests, } from "../lib/common.js";
-import { getRecentEvents, resetRuntimeForTests } from "../lib/runtime.js";
+import { getRecentEvents, resetRuntimeForTests, upsertActiveConfig } from "../lib/runtime.js";
 const ORIGINAL_ENV = { ...process.env };
 afterEach(() => {
     process.env = { ...ORIGINAL_ENV };
@@ -80,6 +80,12 @@ test("emit_event posts runtime events to a configured Core endpoint", async () =
     const mockCore = await new MockCoreServer().start();
     try {
         process.env.PIPHI_EVENTS_ENDPOINT = `${mockCore.baseUrl}/api/v2/events/ingest`;
+        upsertActiveConfig({
+            configId: "gps-config-event",
+            deviceId: "gps-device-event",
+            integrationId: "gps-integration",
+            containerId: "gps-container-event",
+        });
         const event = buildEventPayload({
             eventType: "gps_configured",
             deviceId: "gps-device-event",
@@ -94,9 +100,15 @@ test("emit_event posts runtime events to a configured Core endpoint", async () =
         assert.equal(record.type, "gps_configured");
         assert.equal(mockCore.eventRequests.length, 1);
         assert.deepEqual(mockCore.eventRequests[0]?.body, {
+            event_id: record.event_id,
             type: "gps_configured",
+            ts: record.ts,
+            integration_id: "gps-integration",
+            config_id: "gps-config-event",
+            container_id: "gps-container-event",
             severity: "info",
             device_id: "gps-device-event",
+            transport: "rest",
             data: { path: "/dev/ttyUSB0" },
         });
     }

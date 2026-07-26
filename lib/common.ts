@@ -3,6 +3,8 @@ import crypto from "node:crypto";
 import { client } from "./mqttclient.js";
 import {
   clearRuntimeError,
+  getActiveConfig,
+  getRuntimeContext,
   noteTelemetry,
   type RuntimeEvent,
   recordRuntimeEvent,
@@ -77,7 +79,9 @@ async function publishTelemetryViaMqtt(payload: Record<string, unknown>): Promis
 
 export async function send_telemetry(
   payload: Record<string, unknown> & {
+    config_id?: string;
     device_id: string;
+    integration_id?: string | null;
     timestamp: string;
     metrics: Record<string, unknown>;
     units?: Record<string, string>;
@@ -96,6 +100,7 @@ export async function send_telemetry(
         await postJson(
           telemetryEndpoint,
           {
+            config_id: payload.config_id,
             device_id: payload.device_id,
             timestamp: payload.timestamp,
             metrics: payload.metrics,
@@ -146,9 +151,32 @@ export async function emit_event(eventPayload: {
 }): Promise<RuntimeEvent> {
   const event = recordRuntimeEvent(eventPayload);
   const eventsEndpoint = getEventsEndpoint();
-  if (eventsEndpoint) {
+  const activeConfig = eventPayload.device_id ? getActiveConfig(eventPayload.device_id) : null;
+  if (eventsEndpoint && activeConfig?.integrationId && activeConfig.containerId) {
     try {
-      await postJson(eventsEndpoint, eventPayload, {});
+      const runtime = getRuntimeContext();
+      const containerId = activeConfig.containerId || runtime.auth.containerId;
+      await postJson(
+        eventsEndpoint,
+        {
+          event_id: event.event_id,
+          type: event.type,
+          ts: event.ts,
+          integration_id: activeConfig.integrationId,
+          config_id: activeConfig.configId,
+          container_id: containerId,
+          device_id: event.device_id,
+          severity: event.severity,
+          transport: "rest",
+          data: event.data,
+        },
+        {
+          "X-Container-Id": String(containerId),
+          ...(runtime.auth.internalToken
+            ? { "X-PiPhi-Integration-Token": runtime.auth.internalToken }
+            : {}),
+        },
+      );
     } catch (error) {
       setRuntimeError(error);
     }
