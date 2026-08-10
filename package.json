@@ -18,7 +18,7 @@
     "express-winston": "^4.2.0",
     "mqtt": "^5.14.1",
     "nmea-simple": "^3.3.0",
-    "piphi-runtime-kit-node": "file:../piphi-runtime-kit-node",
+    "piphi-runtime-kit-node": "0.2.0",
     "serialport": "^13.0.0",
     "winston": "^3.18.3"
   },

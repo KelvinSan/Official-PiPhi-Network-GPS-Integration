@@ -78,6 +78,7 @@ test("events route respects limit and returns most recent events first", async (
                 integrationId: "official-piphi-network-gps-integration",
                 payload: { source: eventType },
             });
+            assert.ok(event.eventType);
             recordRuntimeEvent({
                 type: event.eventType,
                 ...(event.severity ? { severity: event.severity } : {}),

@@ -91,6 +91,7 @@ test("emit_event posts runtime events to a configured Core endpoint", async () =
             deviceId: "gps-device-event",
             payload: { path: "/dev/ttyUSB0" },
         });
+        assert.ok(event.eventType);
         const record = await emit_event({
             type: event.eventType,
             ...(event.severity ? { severity: event.severity } : {}),

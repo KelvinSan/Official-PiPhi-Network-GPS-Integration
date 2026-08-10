@@ -1,2 +1,2 @@
-ignoredBuiltDependencies:
-  - '@serialport/bindings-cpp'
+allowBuilds:
+  '@serialport/bindings-cpp': true
