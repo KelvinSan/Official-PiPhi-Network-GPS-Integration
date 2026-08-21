@@ -46,8 +46,8 @@ importers:
         specifier: ^2.4.4
         version: 2.4.4
       piphi-runtime-testkit-node:
-        specifier: file:../piphi-runtime-testkit-node
-        version: file:../piphi-runtime-testkit-node
+        specifier: ^0.1.0
+        version: 0.1.0
       typescript:
         specifier: ^5.9.2
         version: 5.9.3
@@ -539,8 +539,8 @@ packages:
       mqtt:
         optional: true
 
-  piphi-runtime-testkit-node@file:../piphi-runtime-testkit-node:
-    resolution: {directory: ../piphi-runtime-testkit-node, type: directory}
+  piphi-runtime-testkit-node@0.1.0:
+    resolution: {integrity: sha512-jNd4JFOAzy76dXEUCebhpAg7qSDVZ+zxBT2IpmBJFsFwYQ1dZVOx88vrBPmpo2ISznlxvE42goa26bAuo5BMDQ==}
     engines: {node: '>=18'}
 
   process-nextick-args@2.0.1:
@@ -1241,7 +1241,7 @@ snapshots:
     optionalDependencies:
       mqtt: 5.14.1
 
-  piphi-runtime-testkit-node@file:../piphi-runtime-testkit-node: {}
+  piphi-runtime-testkit-node@0.1.0: {}
 
   process-nextick-args@2.0.1: {}
 
