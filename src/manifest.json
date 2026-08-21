@@ -39,6 +39,7 @@
     "endpoints": {
       "health": "/health",
       "config": "/config",
+      "config_sync": "/config/sync",
       "ui_config": "/ui",
       "discover": "/discovery",
       "deconfigure": "/deconfigure",

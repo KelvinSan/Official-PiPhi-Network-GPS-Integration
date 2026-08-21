@@ -47,6 +47,39 @@ test("state route returns empty devices before configuration", async () => {
   }
 });
 
+test("config sync accepts an empty authoritative snapshot", async () => {
+  const server = await startServer();
+  try {
+    const response = await fetch(`${server.baseUrl}/config/sync`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        ...buildRuntimeHeaders({ containerId: "gps-sync-container" }),
+      },
+      body: JSON.stringify({
+        container_id: "gps-sync-container",
+        integration_id: "official-usb-gps-integration",
+        generation: 4,
+        configs: [],
+      }),
+    });
+    const body = (await response.json()) as {
+      ok: boolean;
+      appliedConfigIds: string[];
+      removedConfigIds: string[];
+      generation: number | null;
+    };
+
+    assert.equal(response.status, 200);
+    assert.equal(body.ok, true);
+    assert.deepEqual(body.appliedConfigIds, []);
+    assert.deepEqual(body.removedConfigIds, []);
+    assert.equal(body.generation, 4);
+  } finally {
+    await server.close();
+  }
+});
+
 test("state route returns configured devices and active configs", async () => {
   const server = await startServer();
   try {

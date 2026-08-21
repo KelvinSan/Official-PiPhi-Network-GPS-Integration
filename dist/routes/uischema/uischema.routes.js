@@ -32,6 +32,11 @@ async function handleUiSchema(_req, res) {
     };
     res.json({
         schema,
+        uiSchema: {
+            path: {
+                "ui:widget": "select",
+            },
+        },
         devices,
     });
 }

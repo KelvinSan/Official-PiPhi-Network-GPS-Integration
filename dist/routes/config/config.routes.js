@@ -1,11 +1,12 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
-import { buildConfigApplyResponse, formatConfigApplyLog, } from "piphi-runtime-kit-node";
+import { buildConfigApplyResponse, ConfigSyncCoordinator, formatConfigApplyLog, } from "piphi-runtime-kit-node";
 import { formatExpressRuntimeAuthSyncLog, syncRuntimeAuthFromExpressRequest, } from "piphi-runtime-kit-node/adapters/express";
-import { configureGPSDevice } from "../../lib/gps.js";
-import { getRuntimeContext } from "../../lib/runtime.js";
+import { configureGPSDevice, deconfigureGPSDevice } from "../../lib/gps.js";
+import { getActiveConfigs, getRuntimeContext } from "../../lib/runtime.js";
 import { logger } from "../../server.js";
 export const router = express.Router();
+const configSync = new ConfigSyncCoordinator(getRuntimeContext().processState);
 const schema = [body("path").not().isEmpty().withMessage("Please select a device before continuing")];
 function syncRuntimeAuthFromRequest(req, payload) {
     const runtime = getRuntimeContext();
@@ -40,4 +41,40 @@ router.post("/config", schema, async (req, res) => {
         message: result.message,
         device: result.device ?? null,
     });
+});
+router.post("/config/sync", async (req, res) => {
+    const payload = (req.body ?? {});
+    syncRuntimeAuthFromRequest(req, payload);
+    const snapshot = payload;
+    if (!Array.isArray(snapshot.configs)) {
+        return res.status(400).json({
+            ok: false,
+            error: "configs must be an array",
+        });
+    }
+    const activeConfigIds = getActiveConfigs().map((config) => config.configId);
+    const result = await configSync.applySnapshot(snapshot, {
+        activeConfigIds,
+        applyConfig: async (config) => {
+            await configureGPSDevice({
+                ...config,
+                config_id: config.config_id ?? config.configId ?? config.id,
+                container_id: config.container_id ?? config.containerId ?? null,
+                integration_id: config.integration_id ?? config.integrationId ?? null,
+            });
+        },
+        removeConfig: async (configId) => {
+            const active = getActiveConfigs().find((config) => config.configId === configId);
+            if (!active) {
+                return false;
+            }
+            const removed = await deconfigureGPSDevice({
+                id: active.deviceId,
+                ...(active.path ? { path: active.path } : {}),
+            });
+            return removed.removed > 0;
+        },
+        getActiveConfigIds: () => getActiveConfigs().map((config) => config.configId),
+    });
+    return res.json(result);
 });
