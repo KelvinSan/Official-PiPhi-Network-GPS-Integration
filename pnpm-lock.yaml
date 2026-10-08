@@ -24,8 +24,8 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0
       piphi-runtime-kit-node:
-        specifier: ^0.4.0
-        version: 0.4.0(mqtt@5.14.1)
+        specifier: ^0.5.1
+        version: 0.5.1(mqtt@5.14.1)
       serialport:
         specifier: ^13.0.0
         version: 13.0.0
@@ -530,8 +530,8 @@ packages:
   path-to-regexp@8.3.0:
     resolution: {integrity: sha512-7jdwVIRtsP8MYpdXSwOS0YdD0Du+qOoF/AEPIt88PcCFrZCzx41oxku1jD88hZBwbNUIEfpqvuhjFaMAqMTWnA==}
 
-  piphi-runtime-kit-node@0.4.0:
-    resolution: {integrity: sha512-Cxohd8uTLZBKCfflTYMLnBD4jvhHm1bw7mO1z/pQx4lwIk0kHoBNsw3jVNJjrLKnoRWP7QH3gmMONw4nVqUY1w==}
+  piphi-runtime-kit-node@0.5.1:
+    resolution: {integrity: sha512-0boJaJDIC6ULrZjWRce/TaY9WACgra6YUD5TuQYg82WnKPrORyvaZI+JHTi9Zwlok8qG+WM2c9VPr2mUjLXmpw==}
     engines: {node: '>=18'}
     peerDependencies:
       mqtt: ^5.10.0
@@ -1237,7 +1237,7 @@ snapshots:
 
   path-to-regexp@8.3.0: {}
 
-  piphi-runtime-kit-node@0.4.0(mqtt@5.14.1):
+  piphi-runtime-kit-node@0.5.1(mqtt@5.14.1):
     optionalDependencies:
       mqtt: 5.14.1
 

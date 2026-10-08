@@ -68,6 +68,9 @@ function getDeviceMap() {
 export function getRuntimeContext() {
     return runtimeContext;
 }
+export function getRuntimeRegistry() {
+    return registry;
+}
 export function setRuntimeStatus(status) {
     runtimeMetadata.status = status;
 }

@@ -157,6 +157,10 @@ export function getRuntimeContext(): RuntimeContext {
   return runtimeContext;
 }
 
+export function getRuntimeRegistry(): RuntimeRegistry<DeviceRuntimeState, DeviceRuntimeState, RuntimeEvent> {
+  return registry;
+}
+
 export function setRuntimeStatus(status: string): void {
   runtimeMetadata.status = status;
 }
