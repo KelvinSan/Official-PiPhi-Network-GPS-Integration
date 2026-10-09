@@ -1,6 +1,6 @@
 [project]
 name = "official-piphi-network-gps-integration"
-version = "1.1.0"
+version = "1.1.1"
 description = "Python PiPhi runtime for USB and NMEA-compatible GPS receivers."
 requires-python = ">=3.11"
 dependencies = [
