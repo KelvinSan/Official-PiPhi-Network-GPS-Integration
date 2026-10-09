@@ -4,7 +4,7 @@ This integration connects USB and NMEA-compatible GPS receivers to PiPhi Network
 
 The runtime now uses the published Node SDK package:
 
-- runtime SDK: `piphi-runtime-kit-node@^0.4.0`
+- runtime SDK: `piphi-runtime-kit-node@^0.5.1`
 - local test helper during development: `piphi-runtime-testkit-node`
 
 ## Supported devices

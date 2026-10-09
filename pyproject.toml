@@ -10,7 +10,7 @@ dependencies = [
   "pynmea2>=1.19.0",
   "pyserial>=3.5",
   "uvicorn[standard]>=0.30.0",
-  "piphi-runtime-kit-python>=0.8.0,<1.0.0",
+  "piphi-runtime-kit-python>=0.8.1,<1.0.0",
 ]
 
 [project.optional-dependencies]
