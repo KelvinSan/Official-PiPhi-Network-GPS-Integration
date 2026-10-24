@@ -190,5 +190,8 @@
         "hdop"
       ]
     }
-  ]
+  ],
+  "onboarding": {
+    "mode": "discovery"
+  }
 }

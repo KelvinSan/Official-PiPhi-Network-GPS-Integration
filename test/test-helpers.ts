@@ -17,6 +17,7 @@ export async function startServer(): Promise<StartedServer> {
     baseUrl: `http://127.0.0.1:${address.port}`,
     close: () =>
       new Promise<void>((resolve, reject) => {
+        server.closeAllConnections();
         server.close((error) => {
           if (error) {
             reject(error);
